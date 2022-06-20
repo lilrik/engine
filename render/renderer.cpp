@@ -1,14 +1,31 @@
+#include "renderer.hpp"
 #include <iostream>
 
-#include "lib/glad/include/glad/glad.h"
-#include "lib/glfw/include/GLFW/glfw3.h"
+using namespace render;
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+Renderer::Renderer() {
+	init_glfw();
+	window = init_glfw_window();
+	load_gl();
+}
+
+Renderer::~Renderer() {
+	glfwDestroyWindow(window);
+	glfwTerminate();
+}
+
+void Renderer::loop() {
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+	}
+}
+
+void Renderer::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void init_glfw() {
+void Renderer::init_glfw() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -23,7 +40,7 @@ void init_glfw() {
 	});
 }
 
-GLFWwindow *init_glfw_window() {
+GLFWwindow *Renderer::init_glfw_window() {
 	GLFWwindow *window = glfwCreateWindow(690, 420, "Risk", NULL, NULL);
 	if (!window) {
 		std::cout << "window did not init" << std::endl;
@@ -34,29 +51,7 @@ GLFWwindow *init_glfw_window() {
 	return window;
 }
 
-void load_gl() {
+void Renderer::load_gl() {
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	gladLoadGL();
-}
-
-void terminate_glfw(GLFWwindow *window) {
-	glfwDestroyWindow(window);
-	glfwTerminate();
-}
-
-void render_loop(GLFWwindow *window) {
-	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
-	}
-}
-
-int main() {
-	init_glfw();
-	auto window = init_glfw_window();
-	load_gl();
-
-	render_loop(window);
-
-	terminate_glfw(window);
-	return 0;
 }
