@@ -35,9 +35,7 @@ void Renderer::init_glfw() {
 #endif
 	if (!glfwInit())
 		std::cout << "glfw did not init" << std::endl;
-	glfwSetErrorCallback([](int err, const char *description) noexcept {
-		std::cout << "err " << err << " " << description << std::endl;
-	});
+	glfwSetErrorCallback(nullptr);
 }
 
 GLFWwindow *Renderer::init_glfw_window() {
