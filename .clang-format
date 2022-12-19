@@ -1,7 +1,7 @@
 {
-BasedOnStyle: LLVM,
+PointerAlignment: Right,
 UseTab: Always,
 IndentWidth: 2,
 TabWidth: 2,
-ColumnLimit: 100,
+ColumnLimit: 80,
 }

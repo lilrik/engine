@@ -1,5 +1,5 @@
 CC = clang++
-CFLAGS = -std=c++20 -Wall -fsanitize=address -pedantic
+CFLAGS = -std=c++20 -g -Wall -Wextra -fsanitize=address -pedantic
 LIBS = -I. lib/glad/src/glad.o lib/glfw/build/src/libglfw3.a -fsanitize=address
 OSX = -framework Cocoa -framework IOKit
 

@@ -14,8 +14,8 @@ struct Renderer {
 
 private:
 	GLFWwindow *window;
-	void initGLFW();
-	GLFWwindow *initGLFWWindow();
+	unsigned program;
+	GLFWwindow *initGLFW();
 	void loadGL();
 	void handleInput();
 };
