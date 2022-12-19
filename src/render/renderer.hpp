@@ -4,6 +4,9 @@
 #include "../../lib/glfw/include/GLFW/glfw3.h"
 
 namespace render {
+static const auto width = 690;
+static const auto height = 420;
+
 struct Renderer {
 	Renderer();
 	~Renderer();
@@ -11,9 +14,9 @@ struct Renderer {
 
 private:
 	GLFWwindow *window;
-	void init_glfw();
-	GLFWwindow *init_glfw_window();
-	void load_gl();
-	static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+	void initGLFW();
+	GLFWwindow *initGLFWWindow();
+	void loadGL();
+	void handleInput();
 };
 } // namespace render

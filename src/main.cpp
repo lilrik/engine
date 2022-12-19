@@ -5,5 +5,4 @@
 int main() {
 	render::Renderer r;
 	r.loop();
-	return 0;
 }

@@ -4,9 +4,9 @@
 using namespace render;
 
 Renderer::Renderer() {
-	init_glfw();
-	window = init_glfw_window();
-	load_gl();
+	initGLFW();
+	window = initGLFWWindow();
+	loadGL();
 }
 
 Renderer::~Renderer() {
@@ -16,16 +16,22 @@ Renderer::~Renderer() {
 
 void Renderer::loop() {
 	while (!glfwWindowShouldClose(window)) {
+		handleInput();
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 }
 
-void Renderer::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
+void Renderer::handleInput() {
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 }
 
-void Renderer::init_glfw() {
+void Renderer::initGLFW() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -38,18 +44,24 @@ void Renderer::init_glfw() {
 	glfwSetErrorCallback(nullptr);
 }
 
-GLFWwindow *Renderer::init_glfw_window() {
-	GLFWwindow *window = glfwCreateWindow(690, 420, "Risk", NULL, NULL);
+GLFWwindow *Renderer::initGLFWWindow() {
+	GLFWwindow *window = glfwCreateWindow(width, height, "Risk", NULL, NULL);
 	if (!window) {
 		std::cout << "window did not init" << std::endl;
 		return nullptr;
 	}
 	glfwMakeContextCurrent(window);
-	glfwSetKeyCallback(window, key_callback);
+	glfwSetFramebufferSizeCallback(
+			window, [](GLFWwindow *w, int width, int height) { glViewport(0, 0, width, height); });
+	// glfwSetKeyCallback(window, key_callback);
 	return window;
 }
 
-void Renderer::load_gl() {
-	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+void Renderer::loadGL() {
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cout << "error: GLAD did not load GL fns" << std::endl;
+		return;
+	}
 	gladLoadGL();
+	glViewport(0, 0, width, height);
 }
