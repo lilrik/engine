@@ -1,5 +1,6 @@
 #pragma once
-#include <string>
+#include "common.hpp"
+#include <iostream>
 
 namespace render {
 struct Shader {
@@ -35,9 +36,24 @@ struct Shader {
 
 	unsigned id;
 
-	Shader(const char *vert_data = default_vert,
-				 const char *frag_data = default_frag);
+	Shader(const char *vert_data = default_vert, const char *frag_data = default_frag);
 	~Shader();
+	template <typename F, typename... T> void uniform(const char *name, F func, T... args) {
+		const auto location = glGetUniformLocation(id, "ourColor");
+		if (location == -1) {
+			std::cout << "error: uniform " << name << "not found" << std::endl;
+			return;
+		}
+		// get current id to reset it after (THIS IS SLOW BECAUSE WE QUERY OPENGL STATE)
+		GLint old_id = 0;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &old_id);
+
+		use(); // must set
+		func(location, args...);
+
+		glUseProgram(old_id); // reset old program
+	}
+	inline void use() { glUseProgram(id); }
 
 private:
 	unsigned compileShader(bool is_vert, const char *data);

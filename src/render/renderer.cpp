@@ -3,17 +3,14 @@
 #include "window.hpp"
 #include <cmath>
 #include <iostream>
-#include <memory>
 // #include <ranges> eventually figure out how to make this work
 
 using namespace render;
 
-void uniforms(unsigned program) {
+void uniforms(Shader *program) {
 	const auto time_value = glfwGetTime(), greenValue = (sin(time_value) / 2.0f) + 0.5f,
 						 redValue = (cos(time_value) / 2.0f) + 0.5f;
-	const auto vertexColorLocation = glGetUniformLocation(program, "ourColor"); // -1 == not found
-	// glUseProgram(program); this is already set before running this function
-	glUniform4f(vertexColorLocation, redValue, greenValue, 0.0f, 1.0f);
+	program->uniform("ourColor", glUniform4f, redValue, greenValue, 0.0f, 1.0f);
 }
 
 unsigned buffers() {
@@ -68,9 +65,14 @@ unsigned buffers() {
 }
 
 Renderer::Renderer() {
-	window = std::unique_ptr<Window>(new Window());
+	window = new Window();
 	loadGL();
-	program = std::unique_ptr<Shader>(new Shader());
+	program = new Shader();
+}
+
+Renderer::~Renderer() {
+	delete (program);
+	delete (window);
 }
 
 void Renderer::loop() {
@@ -82,7 +84,7 @@ void Renderer::loop() {
 
 		// uniforms(program);
 
-		glUseProgram(program->id);
+		program->use();
 		const auto vao = buffers();
 		glBindVertexArray(vao);
 		//  bind ebo if needed but usually not because it is also wrapped by the vao
