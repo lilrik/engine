@@ -34,7 +34,8 @@ prog: $(OBJECTS)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 run: all
-	$(BIN_DIR)/prog
+	# https://stackoverflow.com/questions/69861144/get-an-error-as-a-out40780-0x1130af600-malloc-nano-zone-abandoned-due-to-in
+	MallocNanoZone=0 $(BIN_DIR)/prog
 
 clean:
 	rm -rf $(BIN_DIR)

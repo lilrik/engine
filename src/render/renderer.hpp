@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../lib/glad/include/glad/glad.h"
-#include "../../lib/glfw/include/GLFW/glfw3.h"
+#include "common.hpp"
+#include "shader.hpp"
+#include <memory>
 
 namespace render {
 static const auto width = 690;
@@ -14,7 +15,7 @@ struct Renderer {
 
 private:
 	GLFWwindow *window;
-	unsigned program;
+	std::unique_ptr<Shader> program;
 	GLFWwindow *initGLFW();
 	void loadGL();
 	void handleInput();
