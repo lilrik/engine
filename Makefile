@@ -13,7 +13,7 @@ OBJECTS = $(SOURCES:%.cpp=%.o)
 
 all: dirs libs prog
 
-# make directory for object files and final binary
+# make directory for final binary
 dirs:
 	mkdir -p $(BIN_DIR)
 
@@ -27,11 +27,11 @@ lib/glad/src/glad.o:
 	cd lib/glad && $(CC) -o src/glad.o -Iinclude -c src/glad.c
 
 prog: $(OBJECTS)
-	$(CC) -o $(BIN_DIR)/$@ $^ $(OSX) $(LIBS)
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/$@ $^ $(OSX) $(LIBS)
 
 # build obj files
 %.o: %.cpp $(HEADERS)
-	$(CC) -o $@ -c $< $(CFLAGS)
+	$(CC) $(CFLAGS) -o $@ -c $< 
 
 run: all
 	# https://stackoverflow.com/questions/69861144/get-an-error-as-a-out40780-0x1130af600-malloc-nano-zone-abandoned-due-to-in

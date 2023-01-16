@@ -65,19 +65,13 @@ unsigned buffers() {
 }
 
 Renderer::Renderer() {
-	window = new Window();
 	loadGL();
-	program = new Shader();
-}
-
-Renderer::~Renderer() {
-	delete (program);
-	delete (window);
+	program.reset(new Shader());
 }
 
 void Renderer::loop() {
-	while (!window->shouldClose()) {
-		window->handleInput();
+	while (!window.shouldClose()) {
+		window.handleInput();
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -92,7 +86,7 @@ void Renderer::loop() {
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		// glBindVertexArray(0);
 
-		window->swapBuffersAndPollEvents();
+		window.swapBuffersAndPollEvents();
 	}
 }
 
