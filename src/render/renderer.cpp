@@ -13,14 +13,7 @@ void uniforms(Shader *program) {
 	program->uniform("ourColor", glUniform4f, redValue, greenValue, 0.0f, 1.0f);
 }
 
-unsigned buffers() {
-	const float verts[] = {
-			-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bl
-			0.5f,	 -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // br
-			-0.5f, 0.5f,	0.0f, 1.0f, 1.0f, 1.0f, // tl
-			0.5f,	 0.5f,	0.0f, 0.0f, 0.0f, 1.0f, // tr
-	};
-
+void elementBuffer() {
 	const unsigned indices[] = {
 			0, 1,
 			2, // t1
@@ -28,6 +21,31 @@ unsigned buffers() {
 			1 // t2
 	};
 
+	// gen ele buf obj
+	unsigned ebo;
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+}
+
+void vertexBuffer() {
+	const float verts[] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bl
+			0.5f,	 -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // br
+			0.0f,	 0.5f,	0.0f, 1.0f, 1.0f, 1.0f, // t
+			//-0.5f, 0.5f,	0.0f, 1.0f, 1.0f, 1.0f, // tl
+			// 0.5f,	 0.5f,	0.0f, 0.0f, 0.0f, 1.0f, // tr
+	};
+
+	// gen vert buf obj
+	unsigned vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// copy data
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+}
+
+unsigned buffers() {
 	// gen vert arr obj
 	// essentially a wrapper around the vert attrib pointer configs and ebo so we
 	// do not have to repeat the code or rebind every part manually. It's an array
@@ -36,19 +54,10 @@ unsigned buffers() {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	// gen ele buf obj
-	unsigned ebo;
-	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	// elementBuffer();
 
-	// gen vert buf obj
-	unsigned vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	vertexBuffer();
 
-	// copy data
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 	// how to interpret data (this applies to the currently bound buffer)
 	glVertexAttribPointer(0 /*which attribute (the location specified in vert shader)*/,
 												3 /*how many components in a single attrib ele (how many components it
@@ -73,6 +82,11 @@ void Renderer::loop() {
 	while (!window.shouldClose()) {
 		window.handleInput();
 
+		if (const auto err = glGetError(); err) {
+			std::cout << "gl error code " << err << std::endl;
+			exit(1);
+		}
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -83,7 +97,15 @@ void Renderer::loop() {
 		glBindVertexArray(vao);
 		//  bind ebo if needed but usually not because it is also wrapped by the vao
 		//  second arg is num of verts!
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//  third arg is index (see explanation) below
+		// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		// first is mode
+		// second is first index in the array we specified in attributes (the offset just says where the
+		// array starts in the data and here it actually says which part of the array we want it to be
+		// the first)
+		// third is num verts
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		// glBindVertexArray(0);
 
 		window.swapBuffersAndPollEvents();
