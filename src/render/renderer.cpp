@@ -16,8 +16,8 @@ void uniforms(Shader *program) {
 void elementBuffer() {
 	const unsigned indices[] = {
 			0, 1,
-			2, // t1
-			2, 3,
+			3, // t1
+			3, 2,
 			1 // t2
 	};
 
@@ -29,13 +29,15 @@ void elementBuffer() {
 }
 
 void vertexBuffer() {
+	// clang-format off
 	const float verts[] = {
-			-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bl
-			0.5f,	 -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // br
-			0.0f,	 0.5f,	0.0f, 1.0f, 1.0f, 1.0f, // t
-			//-0.5f, 0.5f,	0.0f, 1.0f, 1.0f, 1.0f, // tl
-			// 0.5f,	 0.5f,	0.0f, 0.0f, 0.0f, 1.0f, // tr
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 	};
+	// clang-format on
 
 	// gen vert buf obj
 	unsigned vbo;
@@ -45,7 +47,7 @@ void vertexBuffer() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 }
 
-unsigned buffers() {
+void setupBuffers() {
 	// gen vert arr obj
 	// essentially a wrapper around the vert attrib pointer configs and ebo so we
 	// do not have to repeat the code or rebind every part manually. It's an array
@@ -54,7 +56,7 @@ unsigned buffers() {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	// elementBuffer();
+	elementBuffer();
 
 	vertexBuffer();
 
@@ -64,13 +66,13 @@ unsigned buffers() {
 														 reads after doing one stride jump)*/
 												,
 												GL_FLOAT /*type of the components*/, GL_FALSE /*normalize*/,
-												6 * sizeof(float) /*stride (0 in packed structs does it automatically)*/,
+												8 * sizeof(float) /*stride (0 in packed structs does it automatically)*/,
 												(void *)0 /*start offset*/);
 	glEnableVertexAttribArray(0); // ALWAYS ENABLE BECAUSE IT IS NOT BY DEFAULT
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1); // ALWAYS ENABLE BECAUSE IT IS NOT BY DEFAULT
-
-	return vao;
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2); // ALWAYS ENABLE BECAUSE IT IS NOT BY DEFAULT
 }
 
 Renderer::Renderer() {
@@ -79,6 +81,9 @@ Renderer::Renderer() {
 }
 
 void Renderer::loop() {
+	setupBuffers();
+	program->setupTexture("texture0", "rsc/container.jpg", false);
+	program->setupTexture("texture1", "rsc/smiley.png", true);
 	while (!window.shouldClose()) {
 		window.handleInput();
 
@@ -93,19 +98,19 @@ void Renderer::loop() {
 		// uniforms(program);
 
 		program->use();
-		const auto vao = buffers();
-		glBindVertexArray(vao);
-		//  bind ebo if needed but usually not because it is also wrapped by the vao
+		//  glBindVertexArray(vao);
+		//    bind ebo if needed but usually not because it is also wrapped by the vao
+
 		//  second arg is num of verts!
 		//  third arg is index (see explanation) below
-		// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// first is mode
 		// second is first index in the array we specified in attributes (the offset just says where the
 		// array starts in the data and here it actually says which part of the array we want it to be
 		// the first)
 		// third is num verts
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// glDrawArrays(GL_TRIANGLES, 0, 3);
 		// glBindVertexArray(0);
 
 		window.swapBuffersAndPollEvents();

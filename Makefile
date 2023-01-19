@@ -1,38 +1,37 @@
-CC = clang++
-CFLAGS = -std=c++20 -g -Wall -Wextra -fsanitize=address -pedantic -Wpedantic -Wno-unused-parameter
-LIBS = lib/glad/src/glad.o lib/glfw/build/src/libglfw3.a -fsanitize=address
+CXX = clang++
+CXXFLAGS = -std=c++20 -g -Wall -Wextra -fsanitize=address -pedantic -Wpedantic -Wno-unused-parameter #-Ilib/glad/include -Ilib/glfw/include
+LIBS = lib/glad/src/glad.o lib/stb_image/stb_image.o lib/glfw/build/src/libglfw3.a
 OSX = -framework Cocoa -framework IOKit
 
 EXE_NAME = prog
 HEADERS = $(wildcard src/*.hpp) $(wildcard src/**/*.hpp)
 SOURCES = $(wildcard src/*.cpp) $(wildcard src/**/*.cpp)
 OBJECTS = $(SOURCES:%.cpp=%.o)
+DEPS = $(SOURCES:%.cpp=%.d) # DEPENDENCIES IS A RESERVED NAME WTF?
 
-# to avoid problems with files with these names
-.PHONY: all
+$(EXE_NAME): $(OBJECTS) $(LIBS)
+	@echo $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(OSX)
 
-all: libs prog
+run: $(EXE_NAME)
+	# https://stackoverflow.com/questions/69861144/get-an-error-as-a-out40780-0x1130af600-malloc-nano-zone-abandoned-due-to-in
+	MallocNanoZone=0 ./$(EXE_NAME)
 
 lib/glfw/build/src/libglfw3.a:
 	cd lib/glfw && cmake -S . -B build && cd build && make
 
 lib/glad/src/glad.o: 
-	cd lib/glad && $(CC) -o src/glad.o -Iinclude -c src/glad.c
+	cd lib/glad && $(CXX) -o src/glad.o -Iinclude -c src/glad.c
 
-libs:\
-	lib/glfw/build/src/libglfw3.a\
-	lib/glad/src/glad.o
+lib/stb_image/stb_image.o: 
+	cd lib/stb_image && $(CXX) -o stb_image.o -c stb_image.c
 
-%.o: %.cpp %.hpp
-	$(CC) $(CFLAGS) -o $@ -c $< 
+-include $(DEPS)
 
-$(EXE_NAME): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^ $(OSX) $(LIBS)
-
-run: all
-	# https://stackoverflow.com/questions/69861144/get-an-error-as-a-out40780-0x1130af600-malloc-nano-zone-abandoned-due-to-in
-	MallocNanoZone=0 ./$(EXE_NAME)
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -o $@ -c -MMD $< 
 
 clean:
+	rm $(DEPS)
+	rm $(OBJECTS)
 	rm $(EXE_NAME)
-	rm $(OBJECTS) # $(OBJECTS:.o=.d) #obj dependecy files
