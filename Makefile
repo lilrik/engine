@@ -23,10 +23,10 @@ lib/glfw/build/src/libglfw3.a:
 	cd lib/glfw && cmake -S . -B build && cd build && make
 
 lib/glad/src/glad.o: 
-	cd lib/glad && $(CXX) -o src/glad.o -Iinclude -c src/glad.c
+	cd lib/glad && clang -o src/glad.o -Iinclude -c src/glad.c
 
 lib/stb_image/stb_image.o: 
-	cd lib/stb_image && $(CXX) -o stb_image.o -c stb_image.c
+	cd lib/stb_image && clang -o stb_image.o -c stb_image.c
 
 -include $(DEPS)
 

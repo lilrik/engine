@@ -17,17 +17,20 @@ struct Shader {
 		#version 330 core
 		// location so we don't have to query for it with glAttribLoc
 		layout (location = 0) in vec3 aPos;
-		layout (location = 1) in vec3 aCol;
-		layout (location = 2) in vec2 aTexCoord;
+		//layout (location = 1) in vec3 aCol;
+		layout (location = 1) in vec2 aTexCoord;
 
-		out vec4 vertexColor;
 		out vec2 texCoord;
 
 		uniform mat4 transform;
 
+		uniform mat4 model;
+		uniform mat4 view;
+		uniform mat4 projection;
+
 		void main() {
-			gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-			vertexColor = vec4(aCol.x, aCol.y, aCol.z, 1.0);
+			//gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+			gl_Position = projection * view * model * vec4(aPos, 1.0);
 			texCoord = aTexCoord;
 		}
 	)";
@@ -36,7 +39,6 @@ struct Shader {
 		#version 330 core
 		out vec4 FragColor;
 
-		in vec4 vertexColor;
 		in vec2 texCoord;
 
 		// so the frag shader can access the texture
@@ -52,6 +54,8 @@ struct Shader {
 		void main() {
 			// built-in function that actually does the sampling and filtering
 			//FragColor = vec4(1.0, 0.0, 0.0, 0.0);
+			//FragColor = texture(texture0, texCoord);
+			// TRANSPARENCY NOT WORKING; FIX THIS
 			FragColor = mix(texture(texture0, texCoord), texture(texture1, texCoord), 0.2);
 		} 
 	)";
@@ -74,7 +78,7 @@ struct Shader {
 		glUseProgram(old_id); // reset old program
 	}
 	template <typename F, typename... T>
-	void uniformM(const char *name, F func, unsigned num_matrices, bool transpose, T... args) {
+	void uniformM(const char *name, F func, unsigned num_matrices, bool transpose, T... args) const {
 		const auto location = glGetUniformLocation(id, name);
 		if (location == -1) {
 			std::cout << "error: uniform " << name << " not found" << std::endl;
@@ -89,7 +93,7 @@ struct Shader {
 
 		glUseProgram(old_id); // reset old program
 	}
-	inline void use() { glUseProgram(id); }
+	inline void use() const { glUseProgram(id); }
 	void setupTexture(const char *texture_name, const char *filename, bool has_transparency);
 
 private:

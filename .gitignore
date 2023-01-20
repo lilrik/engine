@@ -2,5 +2,4 @@
 prog
 *.o
 *.d
-rsc/*
 .cache
