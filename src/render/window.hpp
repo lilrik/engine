@@ -3,7 +3,7 @@
 
 namespace render {
 struct Window {
-	Window(int width = 690, int height = 420);
+	Window(int width = 700, int height = 700);
 	~Window();
 	void handleInput();
 	// inline functions live in hpp

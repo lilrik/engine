@@ -1,7 +1,7 @@
 #include "shader.hpp"
-#include "../../lib/stb_image/stb_image.h"
 #include "common.hpp"
 #include <iostream>
+#include <stb_image/stb_image.h>
 
 using namespace render;
 

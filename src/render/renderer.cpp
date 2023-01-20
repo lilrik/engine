@@ -4,8 +4,37 @@
 #include <cmath>
 #include <iostream>
 // #include <ranges> eventually figure out how to make this work
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 using namespace render;
+
+glm::mat4 makeTransMat() {
+	// glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+	//// identity
+	// glm::mat4 trans = glm::mat4(1.0f);
+	//// get transformation matrix by adding a translation vector to identity matrix
+	// trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+	// vec = trans * vec;
+	// std::cout << vec.x << vec.y << vec.z << std::endl;
+
+	// scale and rotate container
+	// attention: glm expects radians
+	// attention: glm expects a unit vector as the rotation axis
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+	return trans;
+}
+
+glm::mat4 makeRotationMat() {
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+	trans =
+			glm::rotate(trans, (float)glfwGetTime() /* angle over time*/, glm::vec3(0.0f, 0.0f, 1.0f));
+	return trans;
+}
 
 void uniforms(Shader *program) {
 	const auto time_value = glfwGetTime(), greenValue = (sin(time_value) / 2.0f) + 0.5f,
@@ -84,6 +113,10 @@ void Renderer::loop() {
 	setupBuffers();
 	program->setupTexture("texture0", "rsc/container.jpg", false);
 	program->setupTexture("texture1", "rsc/smiley.png", true);
+
+	const auto trans_mat = makeTransMat();
+	program->uniformM("transform", glUniformMatrix4fv, 1, false, glm::value_ptr(trans_mat));
+
 	while (!window.shouldClose()) {
 		window.handleInput();
 
@@ -98,6 +131,9 @@ void Renderer::loop() {
 		// uniforms(program);
 
 		program->use();
+		const auto rot_mat = makeRotationMat();
+		program->uniformM("transform", glUniformMatrix4fv, 1, false, glm::value_ptr(rot_mat));
+
 		//  glBindVertexArray(vao);
 		//    bind ebo if needed but usually not because it is also wrapped by the vao
 

@@ -23,8 +23,10 @@ struct Shader {
 		out vec4 vertexColor;
 		out vec2 texCoord;
 
+		uniform mat4 transform;
+
 		void main() {
-			gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+			gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 			vertexColor = vec4(aCol.x, aCol.y, aCol.z, 1.0);
 			texCoord = aTexCoord;
 		}
@@ -68,6 +70,22 @@ struct Shader {
 
 		use(); // must set
 		func(location, args...);
+
+		glUseProgram(old_id); // reset old program
+	}
+	template <typename F, typename... T>
+	void uniformM(const char *name, F func, unsigned num_matrices, bool transpose, T... args) {
+		const auto location = glGetUniformLocation(id, name);
+		if (location == -1) {
+			std::cout << "error: uniform " << name << " not found" << std::endl;
+			return;
+		}
+		// get current id to reset it after (THIS IS SLOW BECAUSE WE QUERY OPENGL STATE)
+		GLint old_id = 0;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &old_id);
+
+		use(); // must set
+		func(location, num_matrices, transpose ? GL_TRUE : GL_FALSE, args...);
 
 		glUseProgram(old_id); // reset old program
 	}
