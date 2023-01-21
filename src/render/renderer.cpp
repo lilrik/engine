@@ -8,6 +8,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#define LOG_FPS()                                                                                  \
+	if (((int)cam.prev_frame_time) % 5 == 0)                                                         \
+		std::cout << pow(cam.delta_time, -1) << std::endl;
+
 using namespace render;
 
 glm::mat4 makeTransMat() {
@@ -34,31 +38,6 @@ glm::mat4 makeRotMat() {
 	trans =
 			glm::rotate(trans, (float)glfwGetTime() /* angle over time*/, glm::vec3(0.0f, 0.0f, 1.0f));
 	return trans;
-}
-
-void mats3D(const Shader *program, const Window *window) {
-	//// orthographic projection
-	//// left, right, bottom, top, near, far
-	// glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
-
-	// fov (realistic = 45), aspect ratio, near, far
-	// glm::mat4 proj =
-	//		glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-
-	auto modelM = glm::mat4(1.0f);
-	// rotate along x to lay obj on floor
-	// modelM = glm::rotate(modelM, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	modelM =
-			glm::rotate(modelM, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-	program->uniformM("model", glUniformMatrix4fv, 1, false, glm::value_ptr(modelM));
-
-	auto viewM = glm::mat4(1.0f);
-	// move scene forward (neg z) in order to move camera backwards
-	viewM = glm::translate(viewM, glm::vec3(0.0f, 0.0f, -3.0f));
-	program->uniformM("view", glUniformMatrix4fv, 1, false, glm::value_ptr(viewM));
-
-	auto projectionM = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-	program->uniformM("projection", glUniformMatrix4fv, 1, false, glm::value_ptr(projectionM));
 }
 
 void uniforms(Shader *program) {
@@ -183,13 +162,13 @@ void setupBuffers() {
 	glEnableVertexAttribArray(1); // ALWAYS ENABLE BECAUSE IT IS NOT BY DEFAULT
 }
 
-void renderCubes(const Shader *program) {
+void renderCubes(const Camera &cam, const Shader *program) {
 	// auto viewM = glm::mat4(1.0f);
 	//// move scene forward (neg z) in order to move camera backwards
 	// viewM = glm::translate(viewM, glm::vec3(0.0f, 0.0f, -3.0f));
 	// program->uniformM("view", glUniformMatrix4fv, 1, false, glm::value_ptr(viewM));
 
-	auto projectionM = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+	auto projectionM = glm::perspective(glm::radians(cam.fov), 800.0f / 600.0f, 0.1f, 100.0f);
 	program->uniformM("projection", glUniformMatrix4fv, 1, false, glm::value_ptr(projectionM));
 	glm::vec3 cubePositions[] = {glm::vec3(0.0f, 0.0f, 0.0f),		 glm::vec3(2.0f, 5.0f, -15.0f),
 															 glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -209,6 +188,7 @@ void renderCubes(const Shader *program) {
 Renderer::Renderer() {
 	loadGL();
 	program.reset(new Shader());
+	window.setupMouse(cam, program.get());
 }
 
 void Renderer::loop() {
@@ -223,7 +203,9 @@ void Renderer::loop() {
 	// program->uniformM("transform", glUniformMatrix4fv, 1, false, glm::value_ptr(trans_mat));
 
 	while (!window.shouldClose()) {
-		window.handleInput(program.get());
+		cam.adjustSpeed();
+		// LOG_FPS();
+		window.handleInput(program.get(), cam);
 
 		if (const auto err = glGetError(); err) {
 			std::cout << "gl error code " << err << std::endl;
@@ -255,7 +237,7 @@ void Renderer::loop() {
 		// glDrawArrays(GL_TRIANGLES, 0, 36);
 		// glBindVertexArray(0);
 
-		renderCubes(program.get());
+		renderCubes(cam, program.get());
 
 		window.swapBuffersAndPollEvents();
 	}

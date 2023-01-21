@@ -1,5 +1,6 @@
 #pragma once
 
+#include "camera.hpp"
 #include "common.hpp"
 #include "shader.hpp"
 #include "window.hpp"
@@ -11,6 +12,7 @@ struct Renderer {
 	void loop();
 
 private:
+	Camera cam;
 	Window window;
 	std::unique_ptr<Shader> program;
 	static void loadGL();
