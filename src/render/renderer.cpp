@@ -184,10 +184,10 @@ void setupBuffers() {
 }
 
 void renderCubes(const Shader *program) {
-	auto viewM = glm::mat4(1.0f);
-	// move scene forward (neg z) in order to move camera backwards
-	viewM = glm::translate(viewM, glm::vec3(0.0f, 0.0f, -3.0f));
-	program->uniformM("view", glUniformMatrix4fv, 1, false, glm::value_ptr(viewM));
+	// auto viewM = glm::mat4(1.0f);
+	//// move scene forward (neg z) in order to move camera backwards
+	// viewM = glm::translate(viewM, glm::vec3(0.0f, 0.0f, -3.0f));
+	// program->uniformM("view", glUniformMatrix4fv, 1, false, glm::value_ptr(viewM));
 
 	auto projectionM = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 	program->uniformM("projection", glUniformMatrix4fv, 1, false, glm::value_ptr(projectionM));
@@ -223,7 +223,7 @@ void Renderer::loop() {
 	// program->uniformM("transform", glUniformMatrix4fv, 1, false, glm::value_ptr(trans_mat));
 
 	while (!window.shouldClose()) {
-		window.handleInput();
+		window.handleInput(program.get());
 
 		if (const auto err = glGetError(); err) {
 			std::cout << "gl error code " << err << std::endl;

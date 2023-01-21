@@ -1,4 +1,7 @@
 #include "window.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 using namespace render;
@@ -34,11 +37,22 @@ Window::~Window() {
 	glfwTerminate();
 }
 
-void Window::handleInput() {
+void Window::handleInput(const Shader *p) {
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cam.pos += cam.speed * cam.front;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cam.pos -= cam.speed * cam.front;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cam.pos -= glm::normalize(glm::cross(cam.front, cam.up)) * cam.speed;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cam.pos += glm::normalize(glm::cross(cam.front, cam.up)) * cam.speed;
+
+	cam.updateLookAt(p);
 }
