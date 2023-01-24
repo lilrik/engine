@@ -1,19 +1,13 @@
 #pragma once
-#include "common.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
-
-#define SHADER_CHECK_IMAGE_LOADED(DATA_POINTER)                                                    \
-	do {                                                                                             \
-		if (DATA_POINTER == nullptr) {                                                                 \
-			std::cout << "error: failed to load image: " << stbi_failure_reason() << std::endl;          \
-			exit(1);                                                                                     \
-		}                                                                                              \
-	} while (0)
+#include <render/common.hpp>
 
 namespace render {
-
 struct Shader {
-	static constexpr auto default_vert = R"(
+  static constexpr auto default_vert = R"(
 		#version 330 core
 		// location so we don't have to query for it with glAttribLoc
 		layout (location = 0) in vec3 aPos;
@@ -35,7 +29,7 @@ struct Shader {
 		}
 	)";
 
-	static constexpr auto default_frag = R"(
+  static constexpr auto default_frag = R"(
 		#version 330 core
 		out vec4 FragColor;
 
@@ -60,49 +54,80 @@ struct Shader {
 		} 
 	)";
 
-	Shader(const char *vert_data = default_vert, const char *frag_data = default_frag);
-	~Shader();
-	template <typename F, typename... T> void uniform(const char *name, F func, T... args) {
-		const auto location = glGetUniformLocation(id, name);
-		if (location == -1) {
-			std::cout << "error: uniform " << name << " not found" << std::endl;
-			return;
-		}
-		// get current id to reset it after (THIS IS SLOW BECAUSE WE QUERY OPENGL STATE)
-		GLint old_id = 0;
-		glGetIntegerv(GL_CURRENT_PROGRAM, &old_id);
+  Shader(const char *vert_data = default_vert,
+         const char *frag_data = default_frag);
+  ~Shader();
 
-		use(); // must set
-		func(location, args...);
+  void use() const;
 
-		glUseProgram(old_id); // reset old program
-	}
-	template <typename F, typename... T>
-	void uniformM(const char *name, F func, unsigned num_matrices, bool transpose, T... args) const {
-		const auto location = glGetUniformLocation(id, name);
-		if (location == -1) {
-			std::cout << "error: uniform " << name << " not found" << std::endl;
-			return;
-		}
-		// get current id to reset it after (THIS IS SLOW BECAUSE WE QUERY OPENGL STATE)
-		GLint old_id = 0;
-		glGetIntegerv(GL_CURRENT_PROGRAM, &old_id);
+  unsigned newVAO(unsigned count = 1);
+  void bindVAO(unsigned vao);
 
-		use(); // must set
-		func(location, num_matrices, transpose ? GL_TRUE : GL_FALSE, args...);
+  unsigned newEBO(unsigned count = 1);
+  void bindEBO(unsigned ebo);
+  void fillEBO(auto &data, GLenum usage);
 
-		glUseProgram(old_id); // reset old program
-	}
-	inline void use() const { glUseProgram(id); }
-	void setupTexture(const char *texture_name, const char *filename, bool has_transparency);
+  unsigned newVBO();
+  void bindVBO(unsigned vbo);
+  // reference to prevent pointer decay
+  void fillVBO(auto &data, GLenum usage) {
+    glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, usage);
+  }
+
+  // enables automatically
+  void newAttrib(GLuint index, GLint size, GLenum type, GLboolean normalized,
+                 GLsizei stride, const GLvoid *start_offset) const;
+
+  void updateModel(const glm::mat4 model) const;
+  void updateProj(const glm::mat4 projection) const;
+
+  void setupTexture(const char *texture_name, const char *filename,
+                    bool has_transparency);
+
+  template <typename F, typename... T>
+  void uniform(const char *name, F func, T... args) {
+    const auto location = glGetUniformLocation(id, name);
+    if (location == -1) {
+      std::cout << "error: uniform " << name << " not found" << std::endl;
+      return;
+    }
+    // get current id to reset it after (THIS IS SLOW BECAUSE WE QUERY OPENGL
+    // STATE)
+    GLint old_id = 0;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &old_id);
+
+    use(); // must set
+    func(location, args...);
+
+    glUseProgram(old_id); // reset old program
+  }
+
+  template <typename F, typename... T>
+  void uniformM(const char *name, F func, unsigned num_matrices, bool transpose,
+                T... args) const {
+    const auto location = glGetUniformLocation(id, name);
+    if (location == -1) {
+      std::cout << "error: uniform " << name << " not found" << std::endl;
+      return;
+    }
+    // get current id to reset it after (THIS IS SLOW BECAUSE WE QUERY OPENGL
+    // STATE)
+    GLint old_id = 0;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &old_id);
+
+    use(); // must set
+    func(location, num_matrices, transpose ? GL_TRUE : GL_FALSE, args...);
+
+    glUseProgram(old_id); // reset old program
+  }
 
 private:
-	// shader program id
-	unsigned id;
-	unsigned texture_counter;
+  // shader program id
+  unsigned id;
+  unsigned texture_counter;
 
-	unsigned compileShader(bool is_vert, const char *data);
-	void checkCompilation(unsigned shader);
-	void checkLinking(unsigned program);
+  unsigned compileShader(bool is_vert, const char *data);
+  void checkCompilation(unsigned shader);
+  void checkLinking(unsigned program);
 };
 } // namespace render

@@ -14,6 +14,32 @@
       "-Ilib/glfw/include",
       "-Ilib/stb_image/include",
       "-Ilib/glm",
+      "-Isrc",
+      "-c",
+      "-o",
+      "src/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/Users/home/projects/risk",
+    "file": "/Users/home/projects/risk/src/main.cpp",
+    "output": "/Users/home/projects/risk/src/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-std=c++20",
+      "-g",
+      "-fsanitize=address",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-Wpedantic",
+      "-Wno-unused-parameter",
+      "-Ilib/glad/include",
+      "-Ilib/glfw/include",
+      "-Ilib/stb_image/include",
+      "-Ilib/glm",
+      "-Isrc",
       "-c",
       "-o",
       "src/render/renderer.o",
@@ -22,5 +48,55 @@
     "directory": "/Users/home/projects/risk",
     "file": "/Users/home/projects/risk/src/render/renderer.cpp",
     "output": "/Users/home/projects/risk/src/render/renderer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-std=c++20",
+      "-g",
+      "-fsanitize=address",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-Wpedantic",
+      "-Wno-unused-parameter",
+      "-Ilib/glad/include",
+      "-Ilib/glfw/include",
+      "-Ilib/stb_image/include",
+      "-Ilib/glm",
+      "-Isrc",
+      "-c",
+      "-o",
+      "src/render/shader.o",
+      "src/render/shader.cpp"
+    ],
+    "directory": "/Users/home/projects/risk",
+    "file": "/Users/home/projects/risk/src/render/shader.cpp",
+    "output": "/Users/home/projects/risk/src/render/shader.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-std=c++20",
+      "-g",
+      "-fsanitize=address",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-Wpedantic",
+      "-Wno-unused-parameter",
+      "-Ilib/glad/include",
+      "-Ilib/glfw/include",
+      "-Ilib/stb_image/include",
+      "-Ilib/glm",
+      "-Isrc",
+      "-c",
+      "-o",
+      "src/render/window.o",
+      "src/render/window.cpp"
+    ],
+    "directory": "/Users/home/projects/risk",
+    "file": "/Users/home/projects/risk/src/render/window.cpp",
+    "output": "/Users/home/projects/risk/src/render/window.o"
   }
 ]

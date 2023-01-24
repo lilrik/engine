@@ -1,7 +1,8 @@
 CXX = clang++
 CXXFLAGS = -std=c++20 -g -fsanitize=address\
 					 -Wall -Wextra -pedantic -Wpedantic -Wno-unused-parameter\
-					 -Ilib/glad/include -Ilib/glfw/include -Ilib/stb_image/include -Ilib/glm
+					 -Ilib/glad/include -Ilib/glfw/include -Ilib/stb_image/include -Ilib/glm\
+					 -Isrc
 LIBS = lib/glad/src/glad.o lib/stb_image/stb_image.o lib/glfw/build/src/libglfw3.a
 OSX = -framework Cocoa -framework IOKit
 

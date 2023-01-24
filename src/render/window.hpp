@@ -1,29 +1,35 @@
 #pragma once
-#include "camera.hpp"
-#include "common.hpp"
-#include "shader.hpp"
+#include <array>
+#include <render/camera.hpp>
+#include <render/common.hpp>
+#include <render/shader.hpp>
 
 namespace render {
-struct Data {
-	Camera *cam = nullptr;
-	Shader *prog = nullptr;
-};
 struct Window {
-	static constexpr auto default_w = 700;
-	static constexpr auto default_h = 700;
-	Window(int width = default_w, int height = default_h);
-	~Window();
-	void handleInput(const Shader *p, Camera &cam);
-	// inline functions live in hpp
-	inline void swapBuffersAndPollEvents() {
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-	inline bool shouldClose() { return glfwWindowShouldClose(window); }
-	void setupMouse(Camera &cam, Shader *prog);
+  float width, height;
+
+  // TODO: eventualmente tornar isto numa lista de observers que dao handle de
+  // input currently set camera
+  Camera *cam;
+
+  Window(int width = 1000, int height = 700, Camera *cam = nullptr);
+  ~Window();
+  // inline functions live in hpp
+  inline void swapBuffersAndPollEvents() {
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+  }
+  inline bool shouldClose() { return glfwWindowShouldClose(window); }
+
+  inline void handleAllKeyInput() {
+    cam->handleKeyInput(keys_pressed);
+    handleKeyInput();
+  }
+
+  void handleKeyInput();
 
 private:
-	Data data;
-	GLFWwindow *window;
+  std::array<int, 5> keys_pressed = {0, 0, 0, 0, 0};
+  GLFWwindow *window;
 };
 } // namespace render
