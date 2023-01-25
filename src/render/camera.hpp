@@ -4,7 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <render/shader.hpp>
+#include <render/program.hpp>
+#include <render/shaders.hpp>
 
 namespace render {
 struct Position {
@@ -23,19 +24,20 @@ struct Camera {
   Position prev_pos;
   float fov;
   glm::vec3 pos, front, up;
-  // current program camera is bound to
-  Shader &program;
+  // programs which depend on lookAt
+  std::array<Program, num_programs> &programs;
 
-  Camera(Shader &program)
+  Camera(std::array<Program, 2> &programs)
       : delta_time(0.0f), prev_frame_time(0.0f), speed(0.0f), fov(45.0f),
         pos(glm::vec3(0.0f, 0.0f, 3.0f)), front(glm::vec3(0.0f, 0.0f, -1.0f)),
-        up(glm::vec3(0.0f, 1.0f, 0.0f)), program(program){};
+        up(glm::vec3(0.0f, 1.0f, 0.0f)), programs(programs){};
 
   void adjustSpeed();
   void handleKeyInput(const std::array<int, 5> &keys_pressed);
   void handleMouseInput(double xpos, double ypos);
   void handleScrollInput(double xoffset, double yoffset);
 
+  // WARNING: we use program.use() here
   void updateLookAt();
 
 private:

@@ -83,13 +83,16 @@ void Camera::handleKeyInput(const std::array<int, 5> &keys_pressed) {
 }
 
 void Camera::updateLookAt() {
-  program.uniformM(
-      "view", glUniformMatrix4fv, 1, false,
-      // second argument is the point for the camera to focus on
-      // here we grab the camera position point and "move it forward" by
-      // adding the front direction vector (imagine in 3d space)
-      glm::value_ptr(
-          glm::lookAt(pos, pos + front, glm::vec3(0.0f, 1.0f, 0.0f))));
+  for (auto &program : programs) {
+    program.use();
+    program.uniformM(
+        "view", glUniformMatrix4fv, 1, false,
+        // second argument is the point for the camera to focus on
+        // here we grab the camera position point and "move it forward" by
+        // adding the front direction vector (imagine in 3d space)
+        glm::value_ptr(
+            glm::lookAt(pos, pos + front, glm::vec3(0.0f, 1.0f, 0.0f))));
+  }
 }
 
 inline void Camera::recalcFrontDir() {

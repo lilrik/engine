@@ -2,7 +2,7 @@
 #include <array>
 #include <render/camera.hpp>
 #include <render/common.hpp>
-#include <render/shader.hpp>
+#include <render/program.hpp>
 
 namespace render {
 struct Window {

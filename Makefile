@@ -35,6 +35,6 @@ lib/stb_image/stb_image.o:
 	$(CXX) $(CXXFLAGS) -o $@ -c -MMD $< 
 
 clean:
-	rm $(DEPS)
-	rm $(OBJECTS)
+	rm $(DEPS) ||\
+	rm $(OBJECTS) ||\
 	rm $(EXE_NAME)

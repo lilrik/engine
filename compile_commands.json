@@ -42,12 +42,12 @@
       "-Isrc",
       "-c",
       "-o",
-      "src/render/renderer.o",
-      "src/render/renderer.cpp"
+      "src/render/camera.o",
+      "src/render/camera.cpp"
     ],
     "directory": "/Users/home/projects/risk",
-    "file": "/Users/home/projects/risk/src/render/renderer.cpp",
-    "output": "/Users/home/projects/risk/src/render/renderer.o"
+    "file": "/Users/home/projects/risk/src/render/camera.cpp",
+    "output": "/Users/home/projects/risk/src/render/camera.o"
   },
   {
     "arguments": [
@@ -67,12 +67,37 @@
       "-Isrc",
       "-c",
       "-o",
-      "src/render/shader.o",
-      "src/render/shader.cpp"
+      "src/render/program.o",
+      "src/render/program.cpp"
     ],
     "directory": "/Users/home/projects/risk",
-    "file": "/Users/home/projects/risk/src/render/shader.cpp",
-    "output": "/Users/home/projects/risk/src/render/shader.o"
+    "file": "/Users/home/projects/risk/src/render/program.cpp",
+    "output": "/Users/home/projects/risk/src/render/program.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-std=c++20",
+      "-g",
+      "-fsanitize=address",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-Wpedantic",
+      "-Wno-unused-parameter",
+      "-Ilib/glad/include",
+      "-Ilib/glfw/include",
+      "-Ilib/stb_image/include",
+      "-Ilib/glm",
+      "-Isrc",
+      "-c",
+      "-o",
+      "src/render/renderer.o",
+      "src/render/renderer.cpp"
+    ],
+    "directory": "/Users/home/projects/risk",
+    "file": "/Users/home/projects/risk/src/render/renderer.cpp",
+    "output": "/Users/home/projects/risk/src/render/renderer.o"
   },
   {
     "arguments": [

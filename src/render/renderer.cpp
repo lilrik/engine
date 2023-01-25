@@ -1,6 +1,5 @@
 #include <cmath>
 #include <render/renderer.hpp>
-#include <render/shader.hpp>
 #include <render/window.hpp>
 #include <util/error.hpp>
 // #include <ranges> eventually figure out how to make this work
@@ -16,47 +15,47 @@ using namespace render;
 
 // clang-format off
 static constexpr float cube_verts[] = {            
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-                                       
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-                                       
-			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-                                       
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-                                       
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-                                       
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+                          
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+                          
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+                          
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+                          
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,
+                          
+			-0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
 	};
 
 static constexpr glm::vec3 cubes_pos[] = {
@@ -68,17 +67,62 @@ static constexpr glm::vec3 cubes_pos[] = {
 	};
 // clang-format on
 
-void renderCubes(const Shader &program) {
+unsigned Renderer::newVAO(unsigned count) {
+  // gen vert arr obj
+  // essentially a wrapper around the vert attrib pointer configs and ebo so
+  // we do not have to repeat the code or rebind every part manually. It's an
+  // array of attributes (and indices if ebo defined).
+  unsigned vao;
+  glGenVertexArrays(count, &vao);
+  return vao;
+}
+
+void Renderer::bindVAO(unsigned vao) { glBindVertexArray(vao); }
+
+unsigned Renderer::newEBO(unsigned count) {
+  unsigned ebo;
+  glGenBuffers(count, &ebo);
+  return ebo;
+}
+
+void Renderer::bindEBO(unsigned ebo) {
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+}
+
+void Renderer::fillEBO(auto &data, GLenum usage) {
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(data), data, usage);
+}
+
+unsigned Renderer::newVBO() {
+  unsigned vbo;
+  glGenBuffers(1, &vbo);
+  return vbo;
+}
+
+void Renderer::bindVBO(unsigned vbo) { glBindBuffer(GL_ARRAY_BUFFER, vbo); }
+
+void Renderer::fillVBO(auto &data, GLenum usage) {
+  glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, usage);
+}
+
+static void renderLight(const Program &program, unsigned vao) {
+  program.use();
+  Renderer::bindVAO(vao);
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+static void renderCubes(const Program &program, unsigned vao) {
+  program.use();
+  Renderer::bindVAO(vao);
   // for each frame we iterate over the array of the cube positions and, using a
   // new model matrix made from the cube positions translation + index based
   // rotation, draw the one cube (12 triangles aka 36 verts) but in a
   // new pos (because of the new model matrix)
   for (auto i = 0; i < 10; i++) {
-    glm::mat4 model = glm::mat4(1.0f);
+    auto model = glm::mat4(1.0f);
     model = glm::translate(model, cubes_pos[i]);
-    float angle = 40.0f * i;
-    model =
-        glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+    model = glm::rotate(model, glm::radians(40.0f * i),
+                        glm::vec3(1.0f, 0.3f, 0.5f));
     program.updateModel(model);
 
     // first is mode
@@ -89,7 +133,7 @@ void renderCubes(const Shader &program) {
   }
 }
 
-Renderer::Renderer() : cam(Camera(program)) {
+Renderer::Renderer() : cam(Camera(programs)) {
   // inject input observers into window
   window.cam = &cam;
 }
@@ -100,23 +144,45 @@ void Renderer::loop() {
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
+  // TODO: VAOs are not associated with programs and therefore should not be a
+  // method
+  // TODO: all shader methods should be marked const
+
+  // TODO: gen two at once
+  const auto vao1 = newVAO();
+  bindVAO(vao1);
+  const auto vao2 = newVAO();
+  //  put data in buffers (it's the same)
+  const auto vbo = newVBO();
+  bindVBO(vbo);
+  fillVBO(cube_verts, GL_STATIC_DRAW);
+
+  auto &program = programs[0], &light_program = programs[1];
+
+  // setup cubes program
   program.use();
-
-  const auto vao = program.newVAO();
-  program.bindVAO(vao);
-
-  const auto vbo = program.newVBO();
-  program.bindVBO(vbo);
-  program.fillVBO(cube_verts, GL_STATIC_DRAW);
-  program.newAttrib(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-  program.newAttrib(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                    (void *)(3 * sizeof(float)));
-
-  program.setupTexture("texture0", "rsc/container.jpg", false);
-  program.setupTexture("texture1", "rsc/smiley.png", true);
-
+  program.newAttrib(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  program.uniform("objectColor", glUniform3f, 1.0f, 0.5f, 0.31f);
+  program.uniform("lightColor", glUniform3f, 1.0f, 1.0f, 1.0f);
+  // my fn sets and unsets program automatically
   program.updateProj(glm::perspective(
       glm::radians(cam.fov), window.width / window.height, 0.1f, 100.0f));
+
+  // setup light program
+  // vao for the light cube
+  bindVAO(vao2);
+  light_program.use();
+  bindVBO(vbo);
+  light_program.newAttrib(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+  light_program.updateProj(glm::perspective(
+      glm::radians(cam.fov), window.width / window.height, 0.1f, 100.0f));
+  const auto light_pos = glm::vec3(1.2f, 1.0f, 2.0f);
+  auto model = glm::mat4(1.0f);
+  model = glm::translate(model, light_pos);
+  model = glm::scale(model, glm::vec3(0.2f));
+  light_program.updateModel(model);
+
+  // updates both these programs
   cam.updateLookAt();
 
   while (!window.shouldClose()) {
@@ -128,8 +194,11 @@ void Renderer::loop() {
     // clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // render
-    renderCubes(program);
+    // render light
+    renderLight(light_program, vao2);
+
+    // render cubes
+    renderCubes(program, vao1);
 
     // poll events
     window.swapBuffersAndPollEvents();

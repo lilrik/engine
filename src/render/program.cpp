@@ -1,12 +1,12 @@
 #include <iostream>
 #include <render/common.hpp>
-#include <render/shader.hpp>
+#include <render/program.hpp>
 #include <stb_image/stb_image.h>
 #include <util/error.hpp>
 
 using namespace render;
 
-Shader::Shader(const char *vert_data, const char *frag_data)
+Program::Program(const char *vert_data, const char *frag_data)
     : id(-1), texture_counter(0) {
   // compile shaders
   const auto vert = compileShader(true, vert_data),
@@ -26,9 +26,9 @@ Shader::Shader(const char *vert_data, const char *frag_data)
   glDeleteShader(frag);
 }
 
-Shader::~Shader() { glDeleteShader(id); }
+Program::~Program() { glDeleteShader(id); }
 
-unsigned Shader::compileShader(bool is_vert, const char *data) {
+unsigned Program::compileShader(bool is_vert, const char *data) {
   const auto shader_type = is_vert ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
 
   const auto shader = glCreateShader(shader_type);
@@ -39,7 +39,7 @@ unsigned Shader::compileShader(bool is_vert, const char *data) {
   return shader;
 }
 
-void Shader::Shader::checkCompilation(unsigned shader) {
+void Program::Program::checkCompilation(unsigned shader) {
   if (!glIsShader(shader))
     std::cout << "error: not a valid shader" << std::endl;
   int success;
@@ -51,7 +51,7 @@ void Shader::Shader::checkCompilation(unsigned shader) {
   }
 }
 
-void Shader::Shader::checkLinking(unsigned program) {
+void Program::Program::checkLinking(unsigned program) {
   int success;
   // glValidateProgram(program);
   char info_log[512];
@@ -63,8 +63,9 @@ void Shader::Shader::checkLinking(unsigned program) {
 }
 
 // bit dodgy
-void Shader::Shader::setupTexture(const char *texture_name,
-                                  const char *filename, bool has_transparency) {
+void Program::Program::setupTexture(const char *texture_name,
+                                    const char *filename,
+                                    bool has_transparency) {
   stbi_set_flip_vertically_on_load(true);
 
   // sampling
@@ -107,45 +108,11 @@ void Shader::Shader::setupTexture(const char *texture_name,
   texture_counter++;
 }
 
-void Shader::use() const { glUseProgram(id); }
+void Program::use() const { glUseProgram(id); }
 
-unsigned Shader::newVAO(unsigned count) {
-  // gen vert arr obj
-  // essentially a wrapper around the vert attrib pointer configs and ebo so
-  // we do not have to repeat the code or rebind every part manually. It's an
-  // array of attributes (and indices if ebo defined).
-  unsigned vao;
-  glGenVertexArrays(count, &vao);
-  return vao;
-}
-
-void Shader::bindVAO(unsigned vao) { glBindVertexArray(vao); }
-
-unsigned Shader::newEBO(unsigned count) {
-  unsigned ebo;
-  glGenBuffers(count, &ebo);
-  return ebo;
-}
-
-void Shader::bindEBO(unsigned ebo) {
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-}
-
-void Shader::fillEBO(auto &data, GLenum usage) {
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(data), data, usage);
-}
-
-unsigned Shader::newVBO() {
-  unsigned vbo;
-  glGenBuffers(1, &vbo);
-  return vbo;
-}
-
-void Shader::bindVBO(unsigned vbo) { glBindBuffer(GL_ARRAY_BUFFER, vbo); }
-
-void Shader::newAttrib(GLuint index, GLint size, GLenum type,
-                       GLboolean normalized, GLsizei stride,
-                       const GLvoid *start_offset) const {
+void Program::newAttrib(GLuint index, GLint size, GLenum type,
+                        GLboolean normalized, GLsizei stride,
+                        const GLvoid *start_offset) const {
   glVertexAttribPointer(
       index /*which attrib (location in vert shader code)*/,
       size /*how many components it reads with a stride jump*/,
@@ -156,11 +123,11 @@ void Shader::newAttrib(GLuint index, GLint size, GLenum type,
       index); // ALWAYS ENABLE BECAUSE IT IS NOT BY DEFAULT
 }
 
-void Shader::updateModel(const glm::mat4 model) const {
+void Program::updateModel(const glm::mat4 model) const {
   uniformM("model", glUniformMatrix4fv, 1, false, glm::value_ptr(model));
 }
 
-void Shader::updateProj(const glm::mat4 projection) const {
+void Program::updateProj(const glm::mat4 projection) const {
   uniformM("projection", glUniformMatrix4fv, 1, false,
            glm::value_ptr(projection));
 }
