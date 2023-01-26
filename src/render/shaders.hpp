@@ -33,9 +33,24 @@ static constexpr auto main_frag = R"(
 		out vec4 FragColor;
 
 		// the amount of each color component it reflects from a light source
-		uniform vec3 objectColor;
+		struct Material {
+			vec3 ambient;
+			vec3 diffuse;
+			vec3 specular;
+			float shininess;
+		};
+
+		// intensity of each lighting component
+		struct Light {
+			vec3 ambient;
+			vec3 diffuse;
+			vec3 specular;
+			vec3 position;
+		};
+
+		uniform Material material;
+		uniform Light light;
 		uniform vec3 lightColor;
-		uniform vec3 lightPos;
 		uniform vec3 viewPos;
 
 		in vec3 Normal;
@@ -44,12 +59,11 @@ static constexpr auto main_frag = R"(
 		void main() {
 			// helper vars for diffused and specular
 			vec3 normal = normalize(Normal);
-			vec3 lightDir = normalize(lightPos - FragPos);
-			float specularStrength = 0.5;
+			vec3 lightDir = normalize(light.position - FragPos);
 
 			// diffused light
 			float diff = max(dot(normal, lightDir), 0.0);
-			vec3 diffuse = diff * lightColor;
+			vec3 diffuse = light.diffuse * (material.diffuse * diff) * lightColor;
 
 			// specular light
 			vec3 viewDir = normalize(viewPos - FragPos);
@@ -57,13 +71,12 @@ static constexpr auto main_frag = R"(
 			vec3 reflectDir = reflect(-lightDir, Normal);
 			float shininess = 64;
 			float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-			vec3 specular = specularStrength * spec * lightColor;
+			vec3 specular = light.specular * (material.specular * spec) * lightColor;
 
 			// ambient light
-			float ambientStrength = 0.1;
-			vec3 ambient = ambientStrength * lightColor;
+			vec3 ambient = light.ambient * material.ambient * lightColor;
 
-			FragColor = vec4((ambient + diffuse + specular) * objectColor, 1.0);
+			FragColor = vec4(ambient + diffuse + specular, 1.0);
 		} 
 	)";
 
