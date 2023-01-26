@@ -15,47 +15,47 @@ using namespace render;
 
 // clang-format off
 static constexpr float cube_verts[] = {            
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-                          
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-                          
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-                          
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-                          
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
-                          
-			-0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
 	};
 
 static constexpr glm::vec3 cubes_pos[] = {
@@ -142,7 +142,8 @@ void Renderer::loop() {
   glViewport(0, 0, window.width, window.height);
   // must clear this buffer (like the color buffer) every frame (done below)
   glEnable(GL_DEPTH_TEST);
-  glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+  // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
   // TODO: VAOs are not associated with programs and therefore should not be a
   // method
@@ -159,24 +160,26 @@ void Renderer::loop() {
 
   auto &program = programs[0], &light_program = programs[1];
 
+  const auto light_pos = glm::vec3(1.2f, 1.0f, 2.0f);
+
   // setup cubes program
   program.use();
-  program.newAttrib(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  program.newAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+  program.newAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                    (void *)(3 * sizeof(float)));
   program.uniform("objectColor", glUniform3f, 1.0f, 0.5f, 0.31f);
   program.uniform("lightColor", glUniform3f, 1.0f, 1.0f, 1.0f);
-  // my fn sets and unsets program automatically
-  program.updateProj(glm::perspective(
-      glm::radians(cam.fov), window.width / window.height, 0.1f, 100.0f));
+  program.uniform("lightPos", glUniform3fv, 1, glm::value_ptr(light_pos));
 
   // setup light program
   // vao for the light cube
   bindVAO(vao2);
   light_program.use();
   bindVBO(vbo);
-  light_program.newAttrib(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+  light_program.newAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)0);
   light_program.updateProj(glm::perspective(
       glm::radians(cam.fov), window.width / window.height, 0.1f, 100.0f));
-  const auto light_pos = glm::vec3(1.2f, 1.0f, 2.0f);
   auto model = glm::mat4(1.0f);
   model = glm::translate(model, light_pos);
   model = glm::scale(model, glm::vec3(0.2f));
@@ -199,6 +202,12 @@ void Renderer::loop() {
 
     // render cubes
     renderCubes(program, vao1);
+
+    // in the loop so it changes with window resize
+    // (lowkey should be in callback in window)
+    program.updateProj(glm::perspective(
+        glm::radians(cam.fov), window.width / window.height, 0.1f, 100.0f));
+    program.uniform("viewPos", glUniform3fv, 1, glm::value_ptr(cam.pos));
 
     // poll events
     window.swapBuffersAndPollEvents();

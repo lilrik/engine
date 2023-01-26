@@ -61,16 +61,22 @@ void Camera::handleKeyInput(const std::array<int, 5> &keys_pressed) {
     // we already have the front/back direction and use the cross product of
     // it with the up direction to get a left/right direction
     case GLFW_KEY_W:
-      pos += speed * front;
+      pos += front * speed;
       break;
     case GLFW_KEY_S:
-      pos -= speed * front;
+      pos -= front * speed;
       break;
     case GLFW_KEY_A:
       pos -= glm::normalize(glm::cross(front, up)) * speed;
       break;
     case GLFW_KEY_D:
       pos += glm::normalize(glm::cross(front, up)) * speed;
+      break;
+    case GLFW_KEY_SPACE:
+      pos += up * speed;
+      break;
+    case GLFW_KEY_LEFT_SHIFT:
+      pos -= up * speed;
       break;
     default:
       continue;
