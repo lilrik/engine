@@ -3,3 +3,4 @@ prog
 *.o
 *.d
 .cache
+.DS_Store
