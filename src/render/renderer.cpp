@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <string>
 
 #define LOG_FPS()                                                              \
   if (((int)cam.prev_frame_time) % 5 == 0)                                     \
@@ -68,6 +69,13 @@ static constexpr glm::vec3 cubes_pos[] = {
 	};
 // clang-format on
 
+static constexpr glm::vec3 point_lights_pos[] = {
+    glm::vec3(0.7f, 0.2f, 2.0f),
+    glm::vec3(2.3f, -3.3f, -4.0f),
+    glm::vec3(-4.0f, 2.0f, -12.0f),
+    glm::vec3(0.0f, 0.0f, -3.0f),
+};
+
 unsigned Renderer::newVAO(unsigned count) {
   // gen vert arr obj
   // essentially a wrapper around the vert attrib pointer configs and ebo so
@@ -109,7 +117,12 @@ void Renderer::fillVBO(auto &data, GLenum usage) {
 static void renderLight(const Program &program, unsigned vao) {
   program.use();
   Renderer::bindVAO(vao);
-  glDrawArrays(GL_TRIANGLES, 0, 36);
+  for (const auto &pos : point_lights_pos) {
+    auto model = glm::mat4(1.0f);
+    model = glm::translate(model, pos);
+    program.updateModel(model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+  }
 }
 
 static void renderCubes(const Program &program, unsigned vao) {
@@ -174,13 +187,39 @@ void Renderer::loop() {
 
   program.setupTexture("material.diffuse", "rsc/container2.png", true);
   program.setupTexture("material.specular", "rsc/container2specular.png", true);
-
-  program.uniform("lightColor", glUniform3f, 1.0f, 1.0f, 1.0f);
   program.uniform("material.shininess", glUniform1f, 32.0f);
-  program.uniform("light.position", glUniform3fv, 1, glm::value_ptr(light_pos));
-  program.uniform("light.ambient", glUniform3f, 0.2f, 0.2f, 0.2f);
-  program.uniform("light.diffuse", glUniform3f, 0.5f, 0.5f, 0.5f);
-  program.uniform("light.specular", glUniform3f, 1.0f, 1.0f, 1.0f);
+
+  program.uniform("spotlight.ambient", glUniform3f, 1.0f, 1.0f, 1.0f);
+  program.uniform("spotlight.diffuse", glUniform3f, 0.5f, 0.5f, 0.5f);
+  program.uniform("spotlight.specular", glUniform3f, 1.0f, 1.0f, 1.0f);
+  program.uniform("spotlight.cutOff", glUniform1f,
+                  glm::cos(glm::radians(12.5f)));
+  program.uniform("spotlight.outerCutOff", glUniform1f,
+                  glm::cos(glm::radians(17.5f)));
+  program.uniform("spotlight.constant", glUniform1f, 1.0f);
+  program.uniform("spotlight.linear", glUniform1f, 0.09f);
+  program.uniform("spotlight.quadratic", glUniform1f, 0.032f);
+
+  program.uniform("dirLight.direction", glUniform3f, 0.0f, -1.0f, 0.0f);
+  program.uniform("dirLight.ambient", glUniform3f, 0.2f, 0.2f, 0.2f);
+  program.uniform("dirLight.diffuse", glUniform3f, 0.5f, 0.5f, 0.5f);
+  program.uniform("dirLight.specular", glUniform3f, 1.0f, 1.0f, 1.0f);
+
+#define STRFMT(index, name)                                                    \
+  (std::string("pointLights[") + std::to_string(index) + std::string("].") +   \
+   std::string(name))                                                          \
+      .c_str()
+
+  for (auto i = 0; i < 4; i++) {
+    program.uniform(STRFMT(i, "position"), glUniform3fv, 1,
+                    glm::value_ptr(point_lights_pos[i]));
+    program.uniform(STRFMT(i, "ambient"), glUniform3f, 0.2f, 0.2f, 0.2f);
+    program.uniform(STRFMT(i, "diffuse"), glUniform3f, 0.5f, 0.5f, 0.5f);
+    program.uniform(STRFMT(i, "specular"), glUniform3f, 1.0f, 1.0f, 1.0f);
+    program.uniform(STRFMT(i, "constant"), glUniform1f, 1.0f);
+    program.uniform(STRFMT(i, "linear"), glUniform1f, 0.09f);
+    program.uniform(STRFMT(i, "quadratic"), glUniform1f, 0.032f);
+  }
 
   // setup light program
   // vao for the light cube
@@ -213,6 +252,9 @@ void Renderer::loop() {
 
     // render cubes
     renderCubes(program, vao1);
+
+    program.uniform("spotlight.frontDir", glUniform3fv, 1,
+                    glm::value_ptr(cam.front));
 
     // in the loop so it changes with window resize
     // (lowkey should be in callback in window)
