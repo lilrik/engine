@@ -39,6 +39,8 @@ struct Camera {
 
   // WARNING: we use program.use() here
   void updateLookAt();
+  // WARNING: we use program.use() here
+  void updateProjection(float width, float height);
 
 private:
   void recalcFrontDir();

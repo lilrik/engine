@@ -29,8 +29,11 @@ Window::Window(int width, int height, Camera *cam)
   glfwSetFramebufferSizeCallback(
       window, []([[maybe_unused]] GLFWwindow *window, int width, int height) {
         auto self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+        auto cam = CAM_POINTER;
+
         self->width = width;
         self->height = height;
+        cam->updateProjection(width, height);
         glViewport(0, 0, width, height);
       });
 

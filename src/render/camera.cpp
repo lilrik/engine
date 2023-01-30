@@ -101,6 +101,14 @@ void Camera::updateLookAt() {
   }
 }
 
+void Camera::updateProjection(float width, float height) {
+  for (auto &program : programs) {
+    program.use();
+    program.updateProj(
+        glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f));
+  }
+}
+
 inline void Camera::recalcFrontDir() {
   front = glm::normalize(glm::vec3(
       cos(glm::radians(prev_pos.yaw)) * cos(glm::radians(prev_pos.pitch)),

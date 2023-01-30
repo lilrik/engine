@@ -15,10 +15,6 @@ struct Program {
 
   void use() const;
 
-  // enables automatically
-  void newAttrib(GLuint index, GLint size, GLenum type, GLboolean normalized,
-                 GLsizei stride, const GLvoid *start_offset) const;
-
   void updateModel(const glm::mat4 model) const;
   void updateProj(const glm::mat4 projection) const;
 

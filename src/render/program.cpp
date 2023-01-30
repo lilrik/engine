@@ -110,19 +110,6 @@ void Program::Program::setupTexture(const char *texture_name,
 
 void Program::use() const { glUseProgram(id); }
 
-void Program::newAttrib(GLuint index, GLint size, GLenum type,
-                        GLboolean normalized, GLsizei stride,
-                        const GLvoid *start_offset) const {
-  glVertexAttribPointer(
-      index /*which attrib (location in vert shader code)*/,
-      size /*how many components it reads with a stride jump*/,
-      type /*component type*/, normalized /*wanna normalize?*/,
-      stride /*how many bytes to jump to start of next same type ele*/,
-      start_offset /*start offset in bytes in vbo (cast to void*)*/);
-  glEnableVertexAttribArray(
-      index); // ALWAYS ENABLE BECAUSE IT IS NOT BY DEFAULT
-}
-
 void Program::updateModel(const glm::mat4 model) const {
   uniformM("model", glUniformMatrix4fv, 1, false, glm::value_ptr(model));
 }
