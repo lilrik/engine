@@ -27,14 +27,14 @@ Window::Window(int width, int height, Camera *cam)
 
   // callbacks
   glfwSetFramebufferSizeCallback(
-      window, []([[maybe_unused]] GLFWwindow *window, int width, int height) {
+      window, [](GLFWwindow *window, int width, int height) {
         auto self = static_cast<Window *>(glfwGetWindowUserPointer(window));
         auto cam = CAM_POINTER;
 
+        // update these values for the viewport
         self->width = width;
         self->height = height;
         cam->updateProjection(width, height);
-        glViewport(0, 0, width, height);
       });
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

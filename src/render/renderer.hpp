@@ -10,7 +10,7 @@
 namespace render {
 struct Renderer {
   Renderer();
-  void loop();
+  void draw();
 
 private:
   // window inits glfw (and its context) and ogl so it must come first

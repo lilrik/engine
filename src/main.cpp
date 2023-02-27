@@ -3,6 +3,6 @@
 #include "render/renderer.hpp"
 
 int main() {
-	render::Renderer r;
-	r.loop();
+  render::Renderer r;
+  r.draw();
 }

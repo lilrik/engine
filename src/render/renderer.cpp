@@ -122,11 +122,9 @@ Renderer::Renderer() : cam(Camera(programs)) {
   window.cam = &cam;
 }
 
-void Renderer::loop() {
-  glViewport(0, 0, window.width, window.height);
+void Renderer::draw() {
   // must clear this buffer (like the color buffer) every frame (done below)
   glEnable(GL_DEPTH_TEST);
-  // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
   // create VAOs
@@ -207,7 +205,10 @@ void Renderer::loop() {
   cam.updateProjection(window.width, window.height);
 
   while (!window.shouldClose()) {
-    util::panicIfErr(glGetError(), "opengl error");
+    // must always be in the draw loop
+    // if this is omitted, it uses the whole window
+    glViewport(0, 0, window.width, window.height);
+
     // LOG_FPS();
     cam.adjustSpeed();
     window.handleAllKeyInput();
@@ -226,6 +227,9 @@ void Renderer::loop() {
     program.uniform("spotlight.spot_props.front_dir", glUniform3fv, 1,
                     glm::value_ptr(cam.front));
     program.uniform("view_pos", glUniform3fv, 1, glm::value_ptr(cam.pos));
+
+    // check for opengl errors
+    util::panicIfErr(glGetError(), "opengl error");
 
     // poll events
     window.swapBuffersAndPollEvents();
