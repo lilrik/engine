@@ -1,6 +1,5 @@
-#include "../lib/glad/include/glad/glad.h"
-#include "../lib/glfw/include/GLFW/glfw3.h"
 #include "render/renderer.hpp"
+#include <render/common.hpp>
 
 int main() {
   render::Renderer r;

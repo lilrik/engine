@@ -11,7 +11,7 @@ static void panicIfCond(auto condition, const char *message) {
 
 [[maybe_unused]] static void panicIfErr(int err, const char *message) {
   if (err) {
-    std::cerr << "error: " << err << " " << message << std::endl;
+    std::cerr << "gl error: (code: " << err << ") " << message << std::endl;
     exit(1);
   }
 }

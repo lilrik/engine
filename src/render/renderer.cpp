@@ -1,19 +1,18 @@
 #include <cmath>
-#include <render/renderer.hpp>
-#include <render/window.hpp>
-#include <util/error.hpp>
-// #include <ranges> eventually figure out how to make this work
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <render/renderer.hpp>
 #include <render/vao.hpp>
+#include <render/window.hpp>
 #include <string>
+#include <util/error.hpp>
 
 #define LOG_FPS()                                                              \
   if (((int)cam.prev_frame_time) % 5 == 0)                                     \
     std::cout << pow(cam.delta_time, -1) << std::endl;
 
-#define STRFMT(index, name)                                                    \
+#define UNIFORM_INDEX_STR_FMT(index, name)                                     \
   (std::string("point_lights[") + std::to_string(index) + std::string("].") +  \
    std::string(name))                                                          \
       .c_str()
@@ -141,7 +140,7 @@ void Renderer::draw() {
 
   const auto light_pos = glm::vec3(1.2f, 1.0f, 2.0f);
 
-  // setup cubes program
+  // setup cubes program (really ugly gl code)
   program.use();
   VAO::newAttrib(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   VAO::newAttrib(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
@@ -176,18 +175,20 @@ void Renderer::draw() {
                   1.0f);
 
   for (auto i = 0; i < 4; i++) {
-    program.uniform(STRFMT(i, "position"), glUniform3fv, 1,
+    program.uniform(UNIFORM_INDEX_STR_FMT(i, "position"), glUniform3fv, 1,
                     glm::value_ptr(point_lights_pos[i]));
-    program.uniform(STRFMT(i, "phong_props.ambient"), glUniform3f, 0.2f, 0.2f,
-                    0.2f);
-    program.uniform(STRFMT(i, "phong_props.diffuse"), glUniform3f, 0.5f, 0.5f,
-                    0.5f);
-    program.uniform(STRFMT(i, "phong_props.specular"), glUniform3f, 1.0f, 1.0f,
-                    1.0f);
-    program.uniform(STRFMT(i, "attenuation_props.constant"), glUniform1f, 1.0f);
-    program.uniform(STRFMT(i, "attenuation_props.linear"), glUniform1f, 0.09f);
-    program.uniform(STRFMT(i, "attenuation_props.quadratic"), glUniform1f,
-                    0.032f);
+    program.uniform(UNIFORM_INDEX_STR_FMT(i, "phong_props.ambient"),
+                    glUniform3f, 0.2f, 0.2f, 0.2f);
+    program.uniform(UNIFORM_INDEX_STR_FMT(i, "phong_props.diffuse"),
+                    glUniform3f, 0.5f, 0.5f, 0.5f);
+    program.uniform(UNIFORM_INDEX_STR_FMT(i, "phong_props.specular"),
+                    glUniform3f, 1.0f, 1.0f, 1.0f);
+    program.uniform(UNIFORM_INDEX_STR_FMT(i, "attenuation_props.constant"),
+                    glUniform1f, 1.0f);
+    program.uniform(UNIFORM_INDEX_STR_FMT(i, "attenuation_props.linear"),
+                    glUniform1f, 0.09f);
+    program.uniform(UNIFORM_INDEX_STR_FMT(i, "attenuation_props.quadratic"),
+                    glUniform1f, 0.032f);
   }
 
   // setup light program
@@ -205,21 +206,16 @@ void Renderer::draw() {
   cam.updateProjection(window.width, window.height);
 
   while (!window.shouldClose()) {
-    // must always be in the draw loop
-    // if this is omitted, it uses the whole window
-    glViewport(0, 0, window.width, window.height);
-
     // LOG_FPS();
     cam.adjustSpeed();
     window.handleAllKeyInput();
 
+    // must always be in the draw loop
+    // if this is omitted, it uses the whole window
+    glViewport(0, 0, window.width, window.height);
     // clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // render light
     renderLight(light_program, vao2);
-
-    // render cubes
     renderCubes(program, vao1);
 
     program.uniform("spotlight.position", glUniform3fv, 1,
@@ -231,7 +227,6 @@ void Renderer::draw() {
     // check for opengl errors
     util::panicIfErr(glGetError(), "opengl error");
 
-    // poll events
     window.swapBuffersAndPollEvents();
   }
 }

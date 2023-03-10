@@ -9,8 +9,7 @@
 
 namespace render {
 struct Position {
-  float mouse_x = 0, mouse_y = 0, pitch = 0 /*plane*/,
-        yaw = -90 /*yeeehaw TODO: why is -90 right*/;
+  float mouse_x = 0, mouse_y = 0, pitch = 0, yaw = -90;
 };
 // how does this shit not give a stack buffer overflow anymore
 struct Camera {
@@ -37,9 +36,8 @@ struct Camera {
   void handleMouseInput(double xpos, double ypos);
   void handleScrollInput(double xoffset, double yoffset);
 
-  // WARNING: we use program.use() here
+  // warning: program.use() used here
   void updateLookAt();
-  // WARNING: we use program.use() here
   void updateProjection(float width, float height);
 
 private:

@@ -13,7 +13,7 @@ struct Renderer {
   void draw();
 
 private:
-  // window inits glfw (and its context) and ogl so it must come first
+  // window inits glfw (and its context) and gl so it must initialize first
   Window window;
   std::array<Program, num_programs> programs{
       Program(main_vert, main_frag),

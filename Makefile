@@ -10,7 +10,7 @@ EXE_NAME = prog
 HEADERS = $(wildcard src/*.hpp) $(wildcard src/**/*.hpp)
 SOURCES = $(wildcard src/*.cpp) $(wildcard src/**/*.cpp)
 OBJECTS = $(SOURCES:%.cpp=%.o)
-DEPS = $(SOURCES:%.cpp=%.d) # DEPENDENCIES IS A RESERVED NAME WTF?
+DEPS = $(SOURCES:%.cpp=%.d) # DEPENDENCIES is a reserved name
 
 $(EXE_NAME): $(OBJECTS) $(LIBS)
 	@echo $(OBJECTS)
