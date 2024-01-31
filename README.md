@@ -1,3 +1,3 @@
-Modern C++ graphics engine. Still very much a WIP.
+Basic graphics engine written in modern C++ made by following various tutorials.
 
-This is a personal project for learning so it's only tested on an intel Mac.
+Disclaimer: this is a personal project solely for learning so it only works for Macs (both intel and arm).
